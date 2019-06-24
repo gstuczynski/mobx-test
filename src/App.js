@@ -1,16 +1,26 @@
 import React, { Component } from 'react';
-import { decorate, observable } from "mobx"
+import { decorate, observable, configure, action } from "mobx"
 import { observer } from "mobx-react"
+
+configure({enforceActions: true})
 
 class Store {
   employeesList = [
     { name: "John Doe", salary: 150 },
     { name: "Richard Roe", salary: 225 },
   ]
+  clearList(){
+    this.employeesList = []
+  }
+  pushEmployee(e){
+    this.employeesList.push(e)
+  }
 }
 
 decorate(Store, {
-  employeesList: observable
+  employeesList: observable,
+  clearList: action,
+  pushEmployee: action
 })
 
 const appStore = new Store()
@@ -50,13 +60,11 @@ class Controls extends Component {
   addEmployee = () => {
     const name = prompt("The name:")
     const salary = parseInt(prompt("The salary:"), 10)
-    this.props.store.employeesList.push({ name, salary })
-    // ERROR !!! this will not update the view 
+  this.props.store.pushEmployee({name, salary})
   }
 
   clearList = () => {
-    this.props.store.employeesList = []
-    // ERROR !!! this will not update the view 
+    this.props.store.clearList() 
   }
 
   render() {
