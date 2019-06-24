@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { decorate, observable, configure, action } from "mobx"
+import { decorate, observable, configure, action, computed } from "mobx"
 import { observer } from "mobx-react"
+import Counter from './Counter'
 
 configure({enforceActions: true})
 
@@ -15,12 +16,21 @@ class Store {
   pushEmployee(e){
     this.employeesList.push(e)
   }
+  get totalSum() {
+    let sum = 0
+    this.employeesList.map( e => sum = sum + e.salary)
+    return sum
+  }
+  get highEarnersCount () {
+    return this.employeesList.filter( e => e.salary > 500).length
+  }
 }
 
 decorate(Store, {
   employeesList: observable,
   clearList: action,
-  pushEmployee: action
+  pushEmployee: action,
+  totalSum: computed
 })
 
 const appStore = new Store()
@@ -50,6 +60,16 @@ class Table extends Component {
           />
         )}
       </tbody>
+      <tfoot>
+        <tr>
+          <td>TOTAL:</td>
+          <td>{store.totalSum}</td>
+        </tr>
+      </tfoot>
+      <div className="fade">
+        You have <u>{store.highEarnersCount} team members </u>that earn more that 500$/day.
+      </div>
+      <Counter />
     </table>)
   }
 }
