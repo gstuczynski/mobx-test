@@ -6,6 +6,7 @@ import Counter from './Counter'
 configure({enforceActions: true})
 
 class Store {
+  counter = 1
   employeesList = [
     { name: "John Doe", salary: 150 },
     { name: "Richard Roe", salary: 225 },
@@ -24,13 +25,23 @@ class Store {
   get highEarnersCount () {
     return this.employeesList.filter( e => e.salary > 500).length
   }
+  increment () {
+    this.counter++
+  }
+  
+  decrement () {
+    this.counter--
+  }
 }
 
 decorate(Store, {
   employeesList: observable,
+  counter: observable,
   clearList: action,
   pushEmployee: action,
-  totalSum: computed
+  totalSum: computed,
+  increment: action,
+  decrement: action
 })
 
 const appStore = new Store()
@@ -69,7 +80,6 @@ class Table extends Component {
       <div className="fade">
         You have <u>{store.highEarnersCount} team members </u>that earn more that 500$/day.
       </div>
-      <Counter />
     </table>)
   }
 }
@@ -102,6 +112,7 @@ class App extends Component {
         <h1>Mobx Table</h1>
         <Controls store={appStore} />
         <Table store={appStore} />
+        <Counter store={appStore} />
       </div>
     )
   }
